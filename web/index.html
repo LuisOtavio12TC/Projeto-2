@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Produtos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+    h1 { color: #2c3e50; margin-bottom: 20px; text-align: center; }
+    .nav-link { margin-bottom: 20px; display: inline-block; background-color: #3498db; color: white; padding: 12px 20px; text-decoration: none; font-weight: bold; border-radius: 6px; transition: background-color 0.3s; }
+    .nav-link:hover { background-color: #2980b9; }
+    
+    /* Grid dos produtos */
+    .produtos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; max-width: 900px; margin-top: 20px; }
+    .produto-card { background: #ffffff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; border-top: 5px solid #3498db; }
+    .produto-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+    .produto-nome { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
+    .produto-preco { font-size: 22px; color: #27ae60; font-weight: bold; margin-bottom: 10px; }
+    .produto-categoria { font-size: 12px; background: #eee; color: #555; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 15px; align-self: flex-start; }
+    .produto-desc { font-size: 14px; color: #666; margin-bottom: 20px; flex-grow: 1; }
+    
+    /* Botão apagar */
+    button.delete-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; width: 100%; text-align: center; }
+    button.delete-btn:hover { background-color: #c0392b; }
+  </style>
+</head>
+<body>
+
+  <h1>Catálogo de Produtos</h1>
+  <a href="cadastro.html" class="nav-link">➕ Cadastrar Novo Produto</a>
+
+  <div id="lista-produtos" class="produtos-grid"></div>
+
+  <script>
+    // Busca os produtos do backend
+    async function carregarProdutos() {
+      try {
+        const response = await fetch('http://localhost:3333/products');
+        const produtos = await response.json();
+        
+        const container = document.getElementById('lista-produtos');
+        container.innerHTML = ''; // Limpa antes de colocar novos
+
+        if(produtos.length === 0) {
+          container.innerHTML = '<p>Nenhum produto cadastrado ainda.</p>';
+          return;
+        }
+
+        produtos.forEach(produto => {
+          container.innerHTML += `
+            <div class="produto-card">
+              <div class="produto-categoria">${produto.category}</div>
+              <div class="produto-nome">${produto.name}</div>
+              <div class="produto-preco">R$ ${produto.price}</div>
+              <div class="produto-desc">${produto.description}</div>
+              <button class="delete-btn" onclick="apagarProduto(${produto.id})">🗑️ Apagar</button>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        document.getElementById('lista-produtos').innerHTML = '<p>Erro ao conectar com o servidor.</p>';
+      }
+    }
+
+    // Apaga um produto pelo ID
+    async function apagarProduto(id) {
+      if(confirm('Tem certeza que deseja apagar este produto?')) {
+        try {
+          await fetch(`http://localhost:3333/products/${id}`, {
+            method: 'DELETE'
+          });
+          carregarProdutos(); // Recarrega a lista para sumir com o card
+        } catch (error) {
+          console.error('Erro ao apagar:', error);
+        }
+      }
+    }
+
+    // Chama a função ao abrir a página
+    carregarProdutos();
+  </script>
+</body>
+</html>

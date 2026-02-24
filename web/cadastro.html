@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Produto</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+    h1 { color: #2c3e50; margin-bottom: 20px; text-align: center; }
+    form { background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); width: 100%; max-width: 500px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+    input, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; transition: border-color 0.3s; }
+    input:focus, textarea:focus { border-color: #3498db; outline: none; }
+    button { background-color: #3498db; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: background-color 0.3s; }
+    button:hover { background-color: #2980b9; }
+    .nav-link { margin-bottom: 20px; display: inline-block; color: #3498db; text-decoration: none; font-weight: bold; }
+    .nav-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="nav-link">⬅ Voltar para a Lista de Produtos</a>
+
+  <h1>Cadastrar Novo Produto</h1>
+
+  <form id="form-cadastro">
+    <label for="name">Nome do Produto</label>
+    <input type="text" id="name" required>
+
+    <label for="price">Preço (R$)</label>
+    <input type="text" id="price" required>
+
+    <label for="category">Categoria</label>
+    <input type="text" id="category" required>
+
+    <label for="description">Descrição</label>
+    <textarea id="description" rows="3" required></textarea>
+
+    <button type="submit">Cadastrar Produto</button>
+  </form>
+
+  <script>
+    document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      const category = document.getElementById('category').value;
+      const description = document.getElementById('description').value;
+
+      try {
+        const response = await fetch('http://localhost:3333/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, price, category, description })
+        });
+
+        if (response.ok) {
+          alert('Produto cadastrado com sucesso!');
+          window.location.href = 'index.html'; // Manda o usuário para a lista
+        } else {
+          alert('Erro ao cadastrar produto.');
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro de conexão com o servidor. O terminal está rodando?');
+      }
+    });
+  </script>
+</body>
+</html>
